@@ -19,12 +19,15 @@ import { Antenna } from "../entity/Antenna";
                 antenna: {
                     power: antenna.antennaPower,
                     gain: antenna.antennaGain,
-                    height: antenna.antennaHeight
+                    height: antenna.antennaHeight,
+                    frequency: antenna.antennaFrequency
+
                 },
                 person: {
                     height: person.personHeight
                 }
             };
+            console.log("Body", body);
             return this.http.post(this._API, body);
         }
         

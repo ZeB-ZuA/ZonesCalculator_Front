@@ -1,7 +1,90 @@
 <div class="background">
+    <!-- Botón flotante -->
+    <button class="info-button" (click)="toggleInfoCard()">ℹ️ Info</button>
+
+<!-- Modal de información -->
+<div class="info-modal" *ngIf="isInfoCardVisible">
+    <div class="info-modal-content">
+        <div class="info-modal-header">
+            <h3>Información de Zonas</h3>
+            <button class="close-button" (click)="toggleInfoCard()">✖</button>
+        </div>
+        <div class="info-modal-body">
+            <p><strong>Zona de Exclusión:</strong> Área de alta exposición. Evitar contacto directo.</p>
+            <p><strong>Zona Ocupacional:</strong> Exposición moderada. Se requiere protección.</p>
+            <p><strong>Zona de Cumplimiento:</strong> Área segura para el público en general.</p>
+
+            <h4>📌 Cálculo del Radio de Seguridad</h4>
+            <p>La distancia de seguridad se calcula utilizando la ecuación basada en la <strong>norma T-REC-K.52</strong>:</p>
+            
+            <div class="formula">
+                <math>
+                    <mrow>
+                        <mi>r</mi>
+                        <mo>=</mo>
+                        <msqrt>
+                            <mfrac>
+                                <mrow>
+                                    <mi>P</mi> <mo>&#183;</mo> <mi>G</mi>
+                                </mrow>
+                                <mrow>
+                                    <mn>4</mn> <mo>&#183;</mo> <mi>&pi;</mi> <mo>&#183;</mo> <mi>S</mi>
+                                </mrow>
+                            </mfrac>
+                        </msqrt>
+                    </mrow>
+                </math>
+            </div>
+
+            <p><strong>Donde:</strong></p>
+            <ul>
+                <li><strong>r:</strong> Radio de la zona de seguridad (metros).</li>
+                <li><strong>P:</strong> Potencia de la antena (W).</li>
+                <li><strong>G:</strong> Ganancia de la antena (lineal).</li>
+                <li><strong>S:</strong> Límite de densidad de potencia (W/m²).</li>
+                <li><strong>&pi;:</strong> 3.1416 (constante matemática).</li>
+            </ul>
+
+            <h4>📊 Límites de Densidad de Potencia</h4>
+            <table class="density-table">
+                <thead>
+                    <tr>
+                        <th>Frecuencia (MHz)</th>
+                        <th>Límite (Zona de Cumplimiento) [W/m²]</th>
+                        <th>Límite (Zona Ocupacional) [W/m²]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>&lt; 3</td>
+                        <td>100</td>
+                        <td>500</td>
+                    </tr>
+                    <tr>
+                        <td>3 - 300</td>
+                        <td>10</td>
+                        <td>50</td>
+                    </tr>
+                    <tr>
+                        <td>&gt; 300</td>
+                        <td>1</td>
+                        <td>5</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>📘 Referencias</h4>
+            <p>📄 <a href="https://www.itu.int/rec/T-REC-K.52" target="_blank">Norma T-REC-K.52 - Evaluación de exposición a radiofrecuencia</a></p>
+            <p> Desarrollado por: <strong>Jhoan Sebastian Sua Garcia - 20192578044</strong></p>
+        </div>
+    </div>
+</div>
+
+
+
     <div class="input-card">
         <div class="input-card-header">
-            <h2>Zones - Calculator ( Frecuencias de 3 kHz a 300 GHz ) </h2>
+            <h2>Zones - Calculator (Frecuencias de 3 kHz a 300 GHz)</h2>
         </div>
         <div class="input-form">
             <form [formGroup]="zoneForm" (ngSubmit)="onSubmit()">
@@ -18,44 +101,48 @@
                     <input type="number" id="antennaHeight" formControlName="antennaHeight" required>
                 </div>
                 <div>
+                    <label for="antennaFrequency">Antenna Frequency (MHz):</label>
+                    <input type="number" id="antennaFrequency" formControlName="antennaFrequency" required>
+                </div>
+                <div>
                     <label for="personHeight">Person Height (Meters):</label>
                     <input type="number" id="personHeight" formControlName="personHeight" value="2" required>
                 </div>
                 <div class="button">
-                    <button type="submit"><strong>¡CACULATE!</strong></button>
+                    <button type="submit"><strong>¡CALCULATE!</strong></button>
+                    <button type="button" (click)="toggleView()">
+                        <strong>{{ isPlanView ? 'Vista Horizontal' : 'Vista en Planta' }}</strong>
+                    </button>
                 </div>
             </form>
         </div>
     </div>
+
     <div class="antena-container">
         <div class="antenna-graphic">
             <svg [attr.width]="800" [attr.height]="800" viewBox="0 0 800 800">
-                <circle cx="400" cy="400" [attr.r]="horizontalOccupationalZoneRadius * scaleFactor"
+                <circle cx="400" cy="400" [attr.r]="displayedOccupationalZoneRadius * scaleFactor"
                     fill="rgba(255, 0, 0, 0.2)" stroke="red" stroke-width="2"></circle>
-                <circle cx="400" cy="400" [attr.r]="horizontalComplianceZoneRadius * scaleFactor"
+                <circle cx="400" cy="400" [attr.r]="displayedComplianceZoneRadius * scaleFactor"
                     fill="rgba(255, 165, 0, 0.3)" stroke="orange" stroke-width="2"></circle>
-                <image href="assets/antenna.png" x="350" y="350" width="100" height="100
-              "></image>
+                <image href="assets/antenna.png" x="350" y="350" width="100" height="100"></image>
             </svg>
+
             <div class="zone-values">
-                <h3>Zonas</h3>
-                <p> <span
-                        style="display: inline-block; width: 15px; height: 15px; background-color: red; margin-right: 5px;"></span>
-                    <strong>Zona de Exclusión:</strong> ≤ {{ (horizontalOccupationalZoneRadius) }} m
+                <h3>Zonas ({{ isPlanView ? 'Vista en Planta' : 'Vista Horizontal' }})</h3>
+                <p>
+                    <span style="display: inline-block; width: 15px; height: 15px; background-color: red; margin-right: 5px;"></span>
+                    <strong>Zona de Exclusión:</strong> ≤ {{ displayedOccupationalZoneRadius }} m
                 </p>
-                <p> <span
-                        style="display: inline-block; width: 15px; height: 15px; background-color: orange; margin-right: 5px;"></span>
-                    <strong>Zona Ocupacional:</strong> > {{ (horizontalOccupationalZoneRadius ) }} m y ≤ {{
-                    (horizontalComplianceZoneRadius)}} m
+                <p>
+                    <span style="display: inline-block; width: 15px; height: 15px; background-color: orange; margin-right: 5px;"></span>
+                    <strong>Zona Ocupacional:</strong> > {{ displayedOccupationalZoneRadius }} m y ≤ {{ displayedComplianceZoneRadius }} m
                 </p>
-                <p> <span
-                        style="display: inline-block; width: 15px; height: 15px; background-color: green; margin-right: 5px;"></span>
-                    <strong>Zona de Cumplimiento:</strong> > {{ (horizontalComplianceZoneRadius) }} m
+                <p>
+                    <span style="display: inline-block; width: 15px; height: 15px; background-color: green; margin-right: 5px;"></span>
+                    <strong>Zona de Cumplimiento:</strong> > {{ displayedComplianceZoneRadius }} m
                 </p>
             </div>
         </div>
-
     </div>
-
-
 </div>
