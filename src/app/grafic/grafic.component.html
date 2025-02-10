@@ -1,0 +1,61 @@
+<div class="background">
+    <div class="input-card">
+        <div class="input-card-header">
+            <h2>Zones - Calculator ( Frecuencias de 3 kHz a 300 GHz ) </h2>
+        </div>
+        <div class="input-form">
+            <form [formGroup]="zoneForm" (ngSubmit)="onSubmit()">
+                <div>
+                    <label for="antennaPower">Antenna Power (Wats):</label>
+                    <input type="number" id="antennaPower" formControlName="antennaPower" required>
+                </div>
+                <div>
+                    <label for="antennaGain">Antenna Gain (Linear):</label>
+                    <input type="number" id="antennaGain" formControlName="antennaGain" required>
+                </div>
+                <div>
+                    <label for="antennaHeight">Antenna Height (Meters):</label>
+                    <input type="number" id="antennaHeight" formControlName="antennaHeight" required>
+                </div>
+                <div>
+                    <label for="personHeight">Person Height (Meters):</label>
+                    <input type="number" id="personHeight" formControlName="personHeight" value="2" required>
+                </div>
+                <div class="button">
+                    <button type="submit"><strong>¡CACULATE!</strong></button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="antena-container">
+        <div class="antenna-graphic">
+            <svg [attr.width]="800" [attr.height]="800" viewBox="0 0 800 800">
+                <circle cx="400" cy="400" [attr.r]="horizontalOccupationalZoneRadius * scaleFactor"
+                    fill="rgba(255, 0, 0, 0.2)" stroke="red" stroke-width="2"></circle>
+                <circle cx="400" cy="400" [attr.r]="horizontalComplianceZoneRadius * scaleFactor"
+                    fill="rgba(255, 165, 0, 0.3)" stroke="orange" stroke-width="2"></circle>
+                <image href="assets/antenna.png" x="350" y="350" width="100" height="100
+              "></image>
+            </svg>
+            <div class="zone-values">
+                <h3>Zonas</h3>
+                <p> <span
+                        style="display: inline-block; width: 15px; height: 15px; background-color: red; margin-right: 5px;"></span>
+                    <strong>Zona de Exclusión:</strong> ≤ {{ (horizontalOccupationalZoneRadius) }} m
+                </p>
+                <p> <span
+                        style="display: inline-block; width: 15px; height: 15px; background-color: orange; margin-right: 5px;"></span>
+                    <strong>Zona Ocupacional:</strong> > {{ (horizontalOccupationalZoneRadius ) }} m y ≤ {{
+                    (horizontalComplianceZoneRadius)}} m
+                </p>
+                <p> <span
+                        style="display: inline-block; width: 15px; height: 15px; background-color: green; margin-right: 5px;"></span>
+                    <strong>Zona de Cumplimiento:</strong> > {{ (horizontalComplianceZoneRadius) }} m
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+
+</div>
