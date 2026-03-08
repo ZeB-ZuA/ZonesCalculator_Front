@@ -8,7 +8,8 @@ import { Antenna } from "../entity/Antenna";
     })
 
     export class ZoneService {
-        private readonly _API = 'https://zonescalculatorback-b0b6dxb6dmbtb4gy.canadacentral-01.azurewebsites.net/zones/calculate';
+        private readonly _API = 'https://teoinfo302p2-gaetabfkd9a3hmgj.brazilsouth-01.azurewebsites.net/zones/calculate';
+        
 
         constructor(private http: HttpClient) {
 
